@@ -2,7 +2,7 @@ package mediatheque;
 
 import java.util.Date;
 
-public abstract class Client {
+public abstract class Abonne {
 	private Integer numero;
 	private String nom;
 	private Date dateDeNaissance;
@@ -10,7 +10,7 @@ public abstract class Client {
 	
 	private int nbJoursBannis;
 	
-	public Client(String nom, Date dateDeNaissance) {
+	public Abonne(String nom, Date dateDeNaissance) {
 		nbClients++;
 		this.numero= Integer.valueOf(nbClients);
 		this.nom = nom;

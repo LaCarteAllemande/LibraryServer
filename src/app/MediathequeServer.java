@@ -20,6 +20,8 @@ public class MediathequeServer {
 	}
 
 	public void run() {
+		
+		
 		while (true) {
 			try {
 				Socket reservationClient = reservationSocket.accept();
