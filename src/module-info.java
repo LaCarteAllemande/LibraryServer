@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * @author Nils
+ *
+ */
+module LogicielMediatheque {
+}
