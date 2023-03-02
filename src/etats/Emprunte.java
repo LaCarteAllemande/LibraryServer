@@ -1,9 +1,10 @@
 package etats;
 
+import ex.ExNonEmpruntable;
 import ex.ExNonReservable;
 import ex.ExNonRetournable;
 import mediatheque.Etat;
-import mediatheque.ExNonEmpruntable;
+
 
 public class Emprunte implements Etat{
 

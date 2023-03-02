@@ -1,7 +1,7 @@
 package clients;
 
-import mediatheque.Client;
+import mediatheque.Abonne;
 
-public class ClientNormal extends Client {
+public class ClientNormal extends Abonne {
 	
 }
