@@ -27,7 +27,11 @@ public class DocumentAbstrait implements Document {
 		if (numero > nbDocuments)
 			nbDocuments = numero;
 	}
-
+	
+	public String titre() {
+		return titre;
+	}
+	
 	@Override
 	public int numero() {
 		return this.numero;

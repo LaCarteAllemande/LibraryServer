@@ -7,6 +7,14 @@ public class DVD extends DocumentAbstrait {
 		super(titre, numero);
 		this.adulte = adulte;
 	}
+	
+	@Override
+	public String toString() {
+		String s = "Tout public";
+		if (adulte)
+			s= "Adult only";
+		return super.titre() + " " + s + " " + super.numero();
+	}
 
 	
 	
