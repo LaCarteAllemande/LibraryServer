@@ -3,6 +3,7 @@ package app;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +21,10 @@ public class ClientReservationApp {
 	public ClientReservationApp(int port) {
 		documents = new ArrayList<>();
 		
-		
 		try {
 		    socket = new Socket(IP, port);
 		    try {
-		    	this.initDocuments();
+		    	initDocuments();
 				initAbonne();
 				reserver();
 		    }
@@ -33,16 +33,11 @@ public class ClientReservationApp {
 		    	System.out.println("Erreur lors de la reception du catalogue");
 		    	socket.close();
 		    }
-		    
-		    
-		
-		    
+		        
 		} catch (IOException e) {
 			System.out.println("Erreur lors de l'initialisation de la connexion");
 			
 		}
-		
-
 	}
 	
 	public void reserver() {
@@ -52,6 +47,22 @@ public class ClientReservationApp {
 		int numero = lireNumero();
 		
 		
+		try {
+			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+			out.println(this.numeroAbonne);
+			out.println(numero);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			BufferedReader buffer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String reponseServer = buffer.readLine();
+			System.out.println(reponseServer);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("La médiathèque ne répond pas");
+		}	
 	}
 	
 	private int lireNumero() {

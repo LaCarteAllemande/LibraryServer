@@ -1,5 +1,7 @@
 package documents;
 
+import ex.RestrictionException;
+import mediatheque.Abonne;
 
 public class DVD extends DocumentAbstrait {
 	private boolean adulte;
@@ -15,7 +17,21 @@ public class DVD extends DocumentAbstrait {
 			s= "Adult only";
 		return super.titre() + " " + s + " " + super.numero();
 	}
-
 	
+	@Override
+	public void reservationPour(Abonne ab) throws RestrictionException {
+		if (this.adulte && !ab.adulte())
+				throw new RestrictionException();
+		else
+			super.reservationPour(ab);
+	}
+
+	@Override
+	public void empruntPar(Abonne ab) throws RestrictionException {
+		if (this.adulte && !ab.adulte())
+				throw new RestrictionException();
+		else
+			super.empruntPar(ab);
+	}	
 	
 }

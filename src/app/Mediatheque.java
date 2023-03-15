@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import documents.DVD;
 import mediatheque.Abonne;
 import mediatheque.Document;
+import tasks.VerifyReservation;
 
 public class Mediatheque {
 	
@@ -17,6 +20,7 @@ public class Mediatheque {
 	
 	private static final int RETARD_MAX = 14; 
 	private static final int DUREE_BANNISSEMMENT = 30; 
+	private static final int DELAI_RESERVATION = 7200000;
 	
 	private MediathequeServer server; 
 	
@@ -28,29 +32,60 @@ public class Mediatheque {
 		
 		try {
 			this.server = new MediathequeServer(this);
+			new Thread(server).start();
 		} 
 		catch (IOException e) {
-			
+			System.out.println("Impossible de créer le serveur");
+		}
+	}
+	
+	public void retour (int numeroDocument) {
+		synchronized(this) {
+			if (supports.containsKey(Integer.valueOf(numeroDocument))) {
+				Document d =  supports.get(Integer.valueOf(numeroDocument));
+				d.retour();
+		}
 		}
 	}
 	
 	
-	public static void main(String[] args) {
-		DVD dvd = new DVD("got", 1, true);
-		
+	public void emprunter(int numeroClient, int numeroDocument) {
+		synchronized(this) {
+			if (checkData(numeroClient, numeroDocument)) {
+				Document d = supports.get(numeroDocument);
+				Abonne a = clients.get(numeroClient);
+				if (d.reserveur() == null || d.reserveur() == a)
+					d.empruntPar(a);	
+			}
+		}
+
 	}
 	
-	private void emprunter(int numeroSupport, int numeroClient) {
-		supports.get(numeroSupport).empruntPar(clients.get(numeroClient));
-	}
 	
 	public void reserver (int abonne, int document ) {
+		boolean reserve = false;
+		Document d =null;
+		synchronized(this) {
+			if (checkData(abonne, document) && estDisponible(document)) {
+				d = supports.get(Integer.valueOf(document));
+				d.reservationPour(clients.get(Integer.valueOf(abonne)));
+				reserve =true;
+			}		
+		}	
 		
+		if (reserve) { //on met cette condition pour pouvoir sortir la création du Timer du synchronized
+			Timer timer = new Timer();
+			TimerTask emprunt = new VerifyReservation(d);
+			timer.schedule(emprunt, DELAI_RESERVATION);
+		}
 	}
 	
 	public boolean estDisponible(int numeroDocument) {
-		Document d = supports.get(Integer.valueOf(numeroDocument));
-		return d.emprunteur() == null && d.reserveur() == null;
+		synchronized(this) {
+			Document d = supports.get(Integer.valueOf(numeroDocument));
+			return d.emprunteur() == null && d.reserveur() == null;			
+		}
+
 	}
 	
 	
@@ -70,6 +105,9 @@ public class Mediatheque {
 	
 	public boolean checkData(int abonne, int document) {
 		
-		return clients.containsKey(Integer.valueOf(abonne)) && supports.containsKey(Integer.valueOf(document));
+		synchronized(this) {
+			return clients.containsKey(Integer.valueOf(abonne)) && supports.containsKey(Integer.valueOf(document));
+		}
+		
 	}
 }
