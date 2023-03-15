@@ -1,5 +1,6 @@
 package mediatheque;
 
+import ex.ExNonEmpruntable;
 import ex.ExNonReservable;
 import ex.ExNonRetournable;
 

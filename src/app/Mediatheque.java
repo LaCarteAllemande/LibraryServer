@@ -30,6 +30,7 @@ public class Mediatheque {
 			this.server = new MediathequeServer(this);
 		} 
 		catch (IOException e) {
+			
 		}
 	}
 	
@@ -37,25 +38,38 @@ public class Mediatheque {
 	public static void main(String[] args) {
 		DVD dvd = new DVD("got", 1, true);
 		
-		
-
 	}
 	
 	private void emprunter(int numeroSupport, int numeroClient) {
 		supports.get(numeroSupport).empruntPar(clients.get(numeroClient));
 	}
 	
-	public List<String> getDocumentsDisponibles(){
-		List<String> list = new ArrayList<>();
+	public void reserver (int abonne, int document ) {
 		
-		for (Document d : documents) {
-			if (d.emprunteur() == null && d.reserveur() == null)
-				list.add(d.toString());
+	}
+	
+	public boolean estDisponible(int numeroDocument) {
+		Document d = supports.get(Integer.valueOf(numeroDocument));
+		return d.emprunteur() == null && d.reserveur() == null;
+	}
+	
+	
+	public List<String> getDocumentsDisponibles(){
+		synchronized(this) {
+			List<String> list = new ArrayList<>();
+			
+			for (Document d : documents) {
+				if (d.emprunteur() == null && d.reserveur() == null)
+					list.add(d.toString());
+			}
+			return list;
 		}
-		return list;
 		
 		
 	}
 	
-
+	public boolean checkData(int abonne, int document) {
+		
+		return clients.containsKey(Integer.valueOf(abonne)) && supports.containsKey(Integer.valueOf(document));
+	}
 }

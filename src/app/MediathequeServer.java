@@ -1,29 +1,33 @@
 package app;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.ArrayList;
 
-import threads.ReservationThread;
+import services.LibraryService;
+import services.ReservationService;
+
+import threads.LibraryRunnable;
 
 public class MediathequeServer {
 	private Mediatheque mediatheque;
-	private ServerSocket reservationSocket, empruntSocket, retourSocket;
-	private Runnable reservationThread;
-	private final int PORT_DEMANDES = 3000, PORT_EMPRUNTS = 4000, PORT_RETOURS = 5000;
+	private final int PORT_RESERVATONS = 3000, PORT_EMPRUNTS = 4000, PORT_RETOURS = 5000;
+	private ArrayList<Runnable> runnables; 
+	private final Class<? extends LibraryService> rClass = ReservationService.class; 
 
 	public MediathequeServer(Mediatheque m) throws IOException {
 		//ici ou deleguer dans les threads ?
 		//donner les .class aux serveurs
 		this.mediatheque = m;
-		reservationThread =  new ReservationThread(PORT_DEMANDES, mediatheque);
 		
-		empruntSocket = new ServerSocket(PORT_EMPRUNTS);
-		retourSocket = new ServerSocket(PORT_RETOURS);			
+		this.runnables.add(new LibraryRunnable(PORT_RESERVATONS, mediatheque, rClass));
+
+	
 
 	}
 
 	   public void run() {
-		   new Thread(reservationThread).start();
+		   
+		   for (Runnable t : runnables)
+			   new Thread(t).start();
 	    }
 }

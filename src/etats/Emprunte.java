@@ -3,7 +3,7 @@ package etats;
 import ex.ExNonReservable;
 import ex.ExNonRetournable;
 import mediatheque.Etat;
-import mediatheque.ExNonEmpruntable;
+
 
 public class Emprunte implements Etat{
 
@@ -14,7 +14,7 @@ public class Emprunte implements Etat{
 	}
 
 	@Override
-	public Etat empurunter() throws ExNonEmpruntable {
+	public Etat empurunter() throws ex.ExNonEmpruntable {
 		// TODO Auto-generated method stub
 		return null;
 	}
