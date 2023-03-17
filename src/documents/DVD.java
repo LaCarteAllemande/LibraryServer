@@ -5,8 +5,8 @@ import mediatheque.Abonne;
 
 public class DVD extends DocumentAbstrait {
 	private boolean adulte;
-	public DVD(String titre, int numero, boolean adulte) {
-		super(titre, numero);
+	public DVD(int numero, String titre, Abonne reserveur, Abonne emprunteur, boolean adulte) {
+		super(numero, titre, reserveur, emprunteur);
 		this.adulte = adulte;
 	}
 	

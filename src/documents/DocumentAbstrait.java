@@ -11,20 +11,12 @@ public class DocumentAbstrait implements Document {
 	private String titre;
 	private Abonne emprunteur;
 	private Abonne reserveur;
-	private static int nbDocuments=0;
 	
-	public DocumentAbstrait(String titre) {
-		nbDocuments++;
-		this.numero= Integer.valueOf(nbDocuments);
+	public DocumentAbstrait(int numero, String titre, Abonne reserveur, Abonne emprunteur) {
+		this.numero= numero;
 		this.titre = titre;
-	}
-	
-	public DocumentAbstrait(String titre, int numero) {
-		this.titre = titre;
-		this.numero = numero;
-		
-		if (numero > nbDocuments)
-			nbDocuments = numero;
+		this.emprunteur = emprunteur;
+		this.reserveur = reserveur;
 	}
 	
 	public String titre() {

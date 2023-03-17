@@ -6,4 +6,5 @@
  *
  */
 module LogicielMediatheque {
+	requires java.sql;
 }

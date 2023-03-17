@@ -15,11 +15,13 @@ public class ClientReservationApp {
 	private int numeroAbonne;
 	private final String END = "END";
 	private final String IP = "localhost";
+	Scanner scanner;
 	
 	
 	//on conait  l'IP à l'avance ? (ip connue)
 	public ClientReservationApp(int port) {
 		documents = new ArrayList<>();
+		scanner = new Scanner(System.in);
 		
 		try {
 		    socket = new Socket(IP, port);
@@ -36,6 +38,11 @@ public class ClientReservationApp {
 		        
 		} catch (IOException e) {
 			System.out.println("Erreur lors de l'initialisation de la connexion");
+			
+			try {
+				socket.close();
+			} catch (IOException e1) {
+			}
 			
 		}
 	}
@@ -66,7 +73,7 @@ public class ClientReservationApp {
 	}
 	
 	private int lireNumero() {
-        Scanner scanner = new Scanner(System.in);
+        
         int num =0;
         boolean b = true;
         
@@ -81,17 +88,15 @@ public class ClientReservationApp {
 	        }
         
         }
-        scanner.close();
         
         return num;
 	}
 	
 	private void initAbonne() {
-        Scanner scanner = new Scanner(System.in);
         
         boolean b = true;
         while (b) {
-	        System.out.print("Numéro d'abonnée: ");
+	        System.out.print("Numéro d'abonné: ");
 	        if (scanner.hasNextInt()) {
 	            this.numeroAbonne = scanner.nextInt();
 	            b= false;
@@ -100,7 +105,7 @@ public class ClientReservationApp {
 	        }
         
         }
-        scanner.close();
+        
 	}
 	
 	
@@ -115,6 +120,10 @@ public class ClientReservationApp {
 			s = buffer.readLine();
 		}
 		
+	}
+	
+	public void finalize() {
+		scanner.close();
 	}
 	
 	public static void main(String[] args) {

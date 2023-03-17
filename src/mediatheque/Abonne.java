@@ -3,22 +3,23 @@ package mediatheque;
 import java.util.Calendar;
 import java.util.Date;
 
-public abstract class Abonne {
+public class Abonne {
 	private Integer numero;
 	private String nom;
 	private Date dateDeNaissance;
-	private static int nbClients =0;
 	
 	private int nbJoursBannis;
 	private static int AGE_MINIMAL_ADULTE=17;
 	
-	public Abonne(String nom, Date dateDeNaissance) {
-		nbClients++;
-		this.numero= Integer.valueOf(nbClients);
+	public Abonne(Integer numero, String nom, Date dateDeNaissance) {
+		this.numero= numero;
 		this.nom = nom;
 		this.dateDeNaissance = dateDeNaissance;
 		this.nbJoursBannis =0;
 	}
+	
+	
+
 	
 	private void bannir(int nbJours) {
 		this.nbJoursBannis =+ nbJours;

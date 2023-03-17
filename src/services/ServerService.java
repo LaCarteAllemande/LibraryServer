@@ -4,11 +4,11 @@ import java.net.Socket;
 
 import app.Mediatheque;
 
-public abstract class LibraryService implements Runnable{
+public abstract class ServerService implements Runnable{
 	private Socket socket;
 	Mediatheque mediatheque;
 	
-	public LibraryService(Socket socket, Mediatheque m) {
+	public ServerService(Socket socket, Mediatheque m) {
 		this.socket =socket;
 		this.mediatheque = m;
 	}
