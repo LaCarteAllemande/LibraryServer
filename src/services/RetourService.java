@@ -23,35 +23,32 @@ public class RetourService extends ServerService {
 		try {
 			out = new PrintWriter(socket().getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(socket().getInputStream()));
+			String reponse = "Le document a bien été rendu";
 
-			try {
-
-				String reponse = "Le document a bien été rendu";
+	
 				out.println("Le numéro du document:");
-				int numero = Integer.parseInt(in.readLine());
+				
+				try {
+					int numero = Integer.parseInt(in.readLine());
+					
+					if (mediatheque.documentExists(numero)) {
 
-				if (mediatheque.documentExists(numero)) {
+						if (!mediatheque.estDisponible(numero))
+							mediatheque.retour(numero);
 
-					if (!mediatheque.estDisponible(numero))
-						mediatheque.retour(numero);
+						else
+							reponse = "Le document n'est pas emprunté";
+
+					}
 
 					else
-						reponse = "Le document n'est pas emprunté";
-
+						reponse = "Numéro de document invalide";
 				}
-
-				else
-					reponse = "Numéro de document invalide";
-
+				
+				catch (NumberFormatException e) {
+					reponse = "Entrée invalide";
+				}
 				out.println(reponse);
-				socket().close();
-
-			}
-
-			catch (NumberFormatException e) {
-				System.out.println("Entrée invalide");
-				socket().close();
-			}
 
 		} catch (IOException e) {
 
@@ -60,12 +57,8 @@ public class RetourService extends ServerService {
 
 		finally {
 			try {
-				if (out != null) {
-					out.close();
-				}
-				if (in != null) {
-					in.close();
-				}
+				out.close();
+				in.close();
 				socket().close();
 			} catch (IOException e) {
 				System.out.println("Erreur lors de la fermeture des ressources");

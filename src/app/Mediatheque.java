@@ -117,12 +117,27 @@ public class Mediatheque {
 	public void reserver(int abonne, int document) throws RestrictionException {
 		boolean reserve = false;
 		Document d = null;
+		Abonne a = null;
 		synchronized (this) {
-			if (checkData(abonne, document) && estDisponible(document)) {
-				d = supports.get(Integer.valueOf(document));
-				d.reservationPour(abonnes.get(Integer.valueOf(abonne)));
-				reserve = true;
+			d = supports.get(Integer.valueOf(document));
+			a = abonnes.get(Integer.valueOf(abonne));
+			if (d != null & a != null) {
+				
+				if (d.emprunteur() != null)
+					throw NonEmpruntable();
+				else if(d.reserveur()!= null && )
+				if (d.emprunteur()== null && (d.reserveur()==null || d.reserveur()==a)) {
+					d.reservationPour(abonnes.get(Integer.valueOf(abonne)));
+					reserve = true;					
+				}
+				
+				else
+					throw new 
+
 			}
+			
+			else
+				throw new IllegalArgumentException();
 		}
 
 		if (reserve) { // on met cette condition pour pouvoir sortir la création du Timer du
@@ -132,11 +147,17 @@ public class Mediatheque {
 			timer.schedule(emprunt, DELAI_RESERVATION);
 		}
 	}
-
-	public boolean estDisponible(int numeroDocument) {
-		synchronized (this) {
-			Document d = supports.get(Integer.valueOf(numeroDocument));
-			return d.emprunteur() == null && d.reserveur() == null;
+	
+	public Document getDocument(int numero) {
+		synchronized(supports) {
+			return supports.get(Integer.valueOf(numero));
+		}
+		
+	}
+	
+	public Abonne getAbonne(int numero) {
+		synchronized(abonnes) {
+			return abonnes.get(Integer.valueOf(numero));
 		}
 	}
 
@@ -150,18 +171,6 @@ public class Mediatheque {
 			}
 			return list;
 		}
-
-	}
-	
-	public boolean documentExists(int numero) {
-		return supports.containsKey(Integer.valueOf(numero));
 	}
 
-	public boolean checkData(int abonne, int document) {
-
-		synchronized (this) {
-			return abonnes.containsKey(Integer.valueOf(abonne)) && supports.containsKey(Integer.valueOf(document));
-		}
-
-	}
 }

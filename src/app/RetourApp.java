@@ -54,7 +54,6 @@ public class RetourApp {
 		boolean b = true;
 
 		while (b) {
-			System.out.print("Numéro du document à rendre: ");
 			if (scanner.hasNextInt()) {
 				num = scanner.nextInt();
 				b= false;
