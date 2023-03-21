@@ -1,7 +1,5 @@
 package mediatheque;
 
-import ex.RestrictionException;
-
 public interface Document {
 	int numero();
 	

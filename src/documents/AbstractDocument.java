@@ -1,10 +1,10 @@
 package documents;
 
-import ex.RestrictionException;
 import mediatheque.Abonne;
 import mediatheque.Document;
+import mediatheque.RestrictionException;
 
-public class DocumentAbstrait implements Document {
+public class AbstractDocument implements Document {
 	
 
 	private int numero;
@@ -12,16 +12,18 @@ public class DocumentAbstrait implements Document {
 	private Abonne emprunteur;
 	private Abonne reserveur;
 	
-	public DocumentAbstrait(int numero, String titre, Abonne reserveur, Abonne emprunteur) {
+	public AbstractDocument(int numero, String titre, Abonne reserveur, Abonne emprunteur) {
 		this.numero= numero;
 		this.titre = titre;
 		this.emprunteur = emprunteur;
 		this.reserveur = reserveur;
 	}
 	
-	public String titre() {
+	@Override
+	public String toString() {
 		return titre;
 	}
+		
 	
 	@Override
 	public int numero() {

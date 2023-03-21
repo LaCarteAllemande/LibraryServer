@@ -1,9 +1,9 @@
 package documents;
 
-import ex.RestrictionException;
 import mediatheque.Abonne;
+import mediatheque.RestrictionException;
 
-public class DVD extends DocumentAbstrait {
+public class DVD extends AbstractDocument {
 	private boolean adulte;
 	public DVD(int numero, String titre, Abonne reserveur, Abonne emprunteur, boolean adulte) {
 		super(numero, titre, reserveur, emprunteur);
@@ -15,7 +15,7 @@ public class DVD extends DocumentAbstrait {
 		String s = "Tout public";
 		if (adulte)
 			s= "Adult only";
-		return super.titre() + " " + s + " " + super.numero();
+		return super.toString() + " " + s + " " + super.numero();
 	}
 	
 	@Override

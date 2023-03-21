@@ -5,15 +5,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 
-import app.Mediatheque;
-import ex.RestrictionException;
-import mediatheque.Document;
+import appMediatheque.MediathequeService;
+import mediatheque.ExAbonneBannis;
+import mediatheque.ExDocumentEmprunte;
+import mediatheque.ExDocumentReseve;
+import mediatheque.Mediatheque;
+import mediatheque.RestrictionException;
 
-public class EmpruntService extends ServerService {
+public class EmpruntService extends MediathequeService {
+	private Mediatheque mediatheque;
 
-	public EmpruntService(Socket socket, Mediatheque m) {
-		super(socket, m);
+	public EmpruntService(Socket socket) {
+		super(socket);
+		mediatheque = super.mediatheque();
+
 	}
 
 	@Override
@@ -26,47 +33,43 @@ public class EmpruntService extends ServerService {
 			out = new PrintWriter(socket().getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(socket().getInputStream()));
 
+			String reponse = "Le document a bien été emprunté";
+			out.println("Votre numéro d'abonné:");
+
 			try {
-				String reponse = "Le document a bien été emprunté";
-				out.println("Votre numéro d'abonné:");
+				int numeroAbonne = Integer.parseInt(in.readLine());
+				out.println("Le numéro du document que vous souhaitez emprunter:");
+				int numeroDocument = Integer.parseInt(in.readLine());
 
 				try {
-					int numeroAbonne = Integer.parseInt(in.readLine());
-					out.println("Le numéro du document que vous souhaitez emprunter:");
-					int numeroDocument = Integer.parseInt(in.readLine());
-					if (mediatheque.checkData(numeroAbonne, numeroDocument)) {
-						Document document = mediatheque.getDocument(numeroDocument);
-						if ((document.emprunteur() == null && document.reserveur() == null)
-								|| document.reserveur() == mediatheque.getAbonne(numeroAbonne)) {
-							try {
-								mediatheque.emprunter(numeroAbonne, numeroDocument);
-							}
-
-							catch (RestrictionException e) {
-								reponse = "vous n’avez pas l’âge pour emprunter ce DVD";
-							}
-						}
-
-						else
-							reponse = "Document indisponible";
-
-					}
-
-					else
-						reponse = "Numéro de document ou d'abonné invalide";
+					mediatheque.emprunter(numeroAbonne, numeroDocument);
+				} catch (IllegalArgumentException e3) {
+					reponse = "Veuillez-entrer le numéro correct de l'abonné et du document";
 				}
 
-				catch (NumberFormatException e) {
-					reponse = "Données invalides";
+				catch (RestrictionException e) {
+					reponse = "vous n’avez pas l’âge pour emprunter " + mediatheque.getDocument(numeroDocument);
 				}
 
-				out.println(reponse);
-			} catch (IOException e) {
+				catch (ExDocumentEmprunte e1) {
+					reponse = mediatheque.getDocument(numeroDocument) + " est déjà emprunté";
+				}
 
-				System.out.println("Erreur lors de la lecture ou de l'écriture sur la socket");
+				catch (ExDocumentReseve e2) {
+					reponse = mediatheque.getDocument(numeroDocument) + "est réservé jusqu’à"
+							+ new SimpleDateFormat("hh'h'mm").format(e2.reservation());
+				}
+				catch (ExAbonneBannis e) {
+					reponse = "Vous êtes bannis " + e.duree() + " jours";
+				}
+
+			} catch (NumberFormatException e) {
+				reponse = "Veuillez-entrer des numéros valides";
 			}
+			out.println(reponse);
+		}
 
-		} catch (IOException e) {
+		catch (IOException e) {
 
 			System.out.println("Erreur lors de la lecture ou de l'écriture sur la socket");
 		}
@@ -82,4 +85,5 @@ public class EmpruntService extends ServerService {
 			}
 		}
 	}
+
 }

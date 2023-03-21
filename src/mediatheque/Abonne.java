@@ -7,7 +7,6 @@ public class Abonne {
 	private Integer numero;
 	private String nom;
 	private Date dateDeNaissance;
-	
 	private int nbJoursBannis;
 	private static int AGE_MINIMAL_ADULTE=17;
 	
@@ -18,14 +17,13 @@ public class Abonne {
 		this.nbJoursBannis =0;
 	}
 	
-	
-
-	
-	private void bannir(int nbJours) {
+	public void bannir(int nbJours) {
 		this.nbJoursBannis =+ nbJours;
+		if (nbJoursBannis < 0)
+			nbJoursBannis=0;
 	}
 	
-	private int getNbJoursBannis() {
+	public int getNbJoursBannis() {
 		return this.nbJoursBannis;
 	}
 	

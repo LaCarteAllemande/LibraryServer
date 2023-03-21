@@ -6,12 +6,17 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import app.Mediatheque;
+import appMediatheque.MediathequeService;
+import mediatheque.Document;
+import mediatheque.ExNonRetournable;
+import mediatheque.Mediatheque;
+import server.ServerService;
 
-public class RetourService extends ServerService {
-
+public class RetourService extends MediathequeService {
+	private Mediatheque mediatheque;
 	public RetourService(Socket socket, Mediatheque m) {
-		super(socket, m);
+		super(socket);
+		mediatheque = super.mediatheque();
 	}
 
 	@Override
@@ -25,31 +30,29 @@ public class RetourService extends ServerService {
 			in = new BufferedReader(new InputStreamReader(socket().getInputStream()));
 			String reponse = "Le document a bien été rendu";
 
-	
-				out.println("Le numéro du document:");
-				
-				try {
-					int numero = Integer.parseInt(in.readLine());
-					
-					if (mediatheque.documentExists(numero)) {
+			out.println("Merci d'entrer le numéro du document à rendre au grand chaman:");
 
-						if (!mediatheque.estDisponible(numero))
-							mediatheque.retour(numero);
-
-						else
-							reponse = "Le document n'est pas emprunté";
-
+			try {
+				int numero = Integer.parseInt(in.readLine());
+				Document d = mediatheque.getDocument(numero);
+				if (d != null) {
+					try {
+						mediatheque.retour(numero);
+					} catch (ExNonRetournable e) {
+						System.out.println(d +" ne peut pas être rendu");		
 					}
-
-					else
-						reponse = "Numéro de document invalide";
 				}
-				
-				catch (NumberFormatException e) {
-					reponse = "Entrée invalide";
-				}
-				out.println(reponse);
 
+				else
+					reponse = "Numéro de document inconnu";
+			}
+
+			catch (NumberFormatException e) {
+				reponse = "Entrée invalide";
+
+			out.println(reponse);
+			}
+			
 		} catch (IOException e) {
 
 			System.out.println("Erreur lors de la lecture ou de l'écriture sur la socket");
@@ -64,7 +67,5 @@ public class RetourService extends ServerService {
 				System.out.println("Erreur lors de la fermeture des ressources");
 			}
 		}
-
 	}
-
 }

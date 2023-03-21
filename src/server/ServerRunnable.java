@@ -1,23 +1,17 @@
-package threads;
+package server;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import app.Mediatheque;
-import services.ServerService;
 
-
-
-public class LibraryRunnable implements Runnable {
+public class ServerRunnable implements Runnable {
 	private ServerSocket serverSocket;
-	Mediatheque mediatheque;
-	Class<? extends ServerService> serviceClass;
+	private Class<? extends ServerService> serviceClass;
 	
-	public LibraryRunnable(int port, Mediatheque m, Class<? extends ServerService> service) throws IOException{
+	public ServerRunnable(int port, Class<? extends ServerService> service) throws IOException{
 		serverSocket = new ServerSocket(port);
-		this.mediatheque = m;
 		this.serviceClass = service;
 	}
 	
@@ -30,8 +24,8 @@ public class LibraryRunnable implements Runnable {
                 
 				try {
 					Constructor<? extends ServerService> constructor;
-					constructor = serviceClass.getConstructor(Socket.class, Mediatheque.class);
-					ServerService service = constructor.newInstance(socket, mediatheque);
+					constructor = serviceClass.getConstructor(Socket.class);
+					ServerService service = constructor.newInstance(socket);
 					new Thread(service).start();
 					
 				} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {

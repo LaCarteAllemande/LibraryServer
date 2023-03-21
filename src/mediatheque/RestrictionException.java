@@ -1,4 +1,4 @@
-package ex;
+package mediatheque;
 
 public class RestrictionException extends Exception {
 
