@@ -7,12 +7,12 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 
-import appMediatheque.MediathequeService;
 import mediatheque.ExAbonneBannis;
 import mediatheque.ExDocumentEmprunte;
 import mediatheque.ExDocumentReseve;
 import mediatheque.Mediatheque;
 import mediatheque.RestrictionException;
+import utilitaire.Utilitaire;
 
 public class EmpruntService extends MediathequeService {
 	private Mediatheque mediatheque;
@@ -34,12 +34,12 @@ public class EmpruntService extends MediathequeService {
 			in = new BufferedReader(new InputStreamReader(socket().getInputStream()));
 
 			String reponse = "Le document a bien été emprunté";
-			out.println("Votre numéro d'abonné:");
+			out.println(Utilitaire.encrypt("Votre numéro d'abonné:"));
 
 			try {
-				int numeroAbonne = Integer.parseInt(in.readLine());
-				out.println("Le numéro du document que vous souhaitez emprunter:");
-				int numeroDocument = Integer.parseInt(in.readLine());
+				int numeroAbonne = Integer.parseInt(Utilitaire.decrypt(in.readLine()));
+				out.println(Utilitaire.encrypt("Le numéro du document que vous souhaitez emprunter:"));
+				int numeroDocument = Integer.parseInt(Utilitaire.decrypt(in.readLine()));
 
 				try {
 					mediatheque.emprunter(numeroAbonne, numeroDocument);
@@ -66,7 +66,7 @@ public class EmpruntService extends MediathequeService {
 			} catch (NumberFormatException e) {
 				reponse = "Veuillez-entrer des numéros valides";
 			}
-			out.println(reponse);
+			out.println(Utilitaire.encrypt(reponse));
 		}
 
 		catch (IOException e) {

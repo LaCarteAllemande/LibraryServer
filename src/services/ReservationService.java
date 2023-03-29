@@ -11,18 +11,18 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import appMediatheque.MediathequeService;
 import mediatheque.ExAbonneBannis;
 import mediatheque.ExDocumentEmprunte;
 import mediatheque.ExDocumentReseve;
 import mediatheque.Mediatheque;
 import mediatheque.RestrictionException;
-import server.ServerService;
-import tasks.TryReservation;
+import utilitaire.Utilitaire;
 
 public class ReservationService extends MediathequeService {
 	private final static int TEMPS_MAX_ATTENTE = 30;
 	private Mediatheque mediatheque;
+	private String timerTaskResponse;
+	private TryReservation task;
 
 	public ReservationService(Socket socket) {
 		super(socket);
@@ -33,28 +33,27 @@ public class ReservationService extends MediathequeService {
 	public void run() {
 
 		List<String> list = mediatheque.getDocumentsDisponibles();
-
 		PrintWriter out = null;
 		BufferedReader in = null;
 
 		try {
 			out = new PrintWriter(socket().getOutputStream(), true);
-			
-			out.println(list.size());
+			StringBuilder message = new StringBuilder();
 			for (String s : list)
-				out.println(s);
+				message.append(s).append(System.lineSeparator());
 
 			in = new BufferedReader(new InputStreamReader(socket().getInputStream()));
 
 			try {
 
 				String reponse = "";
-				out.println("Votre numéro d'abonné:");
+				message.append("Votre numéro d'abonné:");
+				out.println(Utilitaire.encrypt(message.toString()));
 
 				try {
-					int numeroAbonne = Integer.parseInt(in.readLine());
-					out.println("Le numéro du document que vous souhaitez reserver:");
-					int numeroDocument = Integer.parseInt(in.readLine());
+					int numeroAbonne = Integer.parseInt(Utilitaire.decrypt(in.readLine()));
+					out.println(Utilitaire.encrypt("Le numéro du document que vous souhaitez reserver:"));
+					int numeroDocument = Integer.parseInt(Utilitaire.decrypt(in.readLine()));
 
 					try {
 						mediatheque.reserver(numeroAbonne, numeroDocument);
@@ -66,11 +65,11 @@ public class ReservationService extends MediathequeService {
 						long difference = (date.getTime() - new Date().getTime()) / 1000;
 
 						if (difference > TEMPS_MAX_ATTENTE)
-							reponse = mediatheque.getDocument(numeroDocument) + "est réservé jusqu’à" + new SimpleDateFormat("hh'h'mm").format(e2.reservation());
+							reponse = "Désolé, " + mediatheque.getDocument(numeroDocument) + "est réservé jusqu’à" + new SimpleDateFormat("hh'h'mm").format(e2.reservation());
 						else {
 							
 							Timer t = new Timer();
-							TimerTask task = new TryReservation(numeroAbonne, numeroDocument, mediatheque, out);
+							task = new TryReservation(numeroAbonne, numeroDocument, mediatheque);
 							t.schedule(task, date);	
 							reponse = "Une musique célèste se propage dans votre salon...veuillez attendre " + difference + " secondes";
 						}
@@ -96,7 +95,19 @@ public class ReservationService extends MediathequeService {
 				} catch (NumberFormatException e) {
 					reponse = "Veuillez-entrer des numéros valides";
 				}
-				out.println(reponse);
+				
+				//si la Timertask a été crée
+				if (task != null) {
+					StringBuilder s = new StringBuilder();
+					s.append(reponse).append(System.lineSeparator());
+					String taskReponse="";
+					while (taskReponse.isEmpty()) {
+						taskReponse = task.getReponse();
+					}
+					s.append(taskReponse);
+					reponse = s.toString();
+				}
+				out.println(Utilitaire.encrypt(reponse));
 
 			} catch (IOException e) {
 
@@ -109,6 +120,7 @@ public class ReservationService extends MediathequeService {
 
 			System.out.println("Erreur lors de la lecture ou de l'écriture sur la socket");
 		}
+		
 
 		finally {
 			try {
@@ -120,6 +132,10 @@ public class ReservationService extends MediathequeService {
 				System.out.println("Erreur lors de la fermeture des ressources");
 			}
 		}
+	}
+	
+	public void setReponse(String reponse) {
+		this.timerTaskResponse = reponse;
 	}
 
 }

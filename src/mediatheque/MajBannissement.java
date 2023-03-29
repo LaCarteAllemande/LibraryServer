@@ -1,9 +1,7 @@
-package tasks;
+package mediatheque;
 
 import java.util.Map;
 import java.util.TimerTask;
-
-import mediatheque.Abonne;
 
 public class MajBannissement extends TimerTask {
 	private Map<Integer, Abonne> abonnes;

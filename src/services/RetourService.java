@@ -6,14 +6,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import appMediatheque.MediathequeService;
 import mediatheque.Document;
 import mediatheque.ExNonRetournable;
 import mediatheque.Mediatheque;
-import server.ServerService;
+import utilitaire.Utilitaire;
 
 public class RetourService extends MediathequeService {
-	private Mediatheque mediatheque;
+	private Mediatheque mediatheque; 	
 	public RetourService(Socket socket, Mediatheque m) {
 		super(socket);
 		mediatheque = super.mediatheque();
@@ -30,7 +29,7 @@ public class RetourService extends MediathequeService {
 			in = new BufferedReader(new InputStreamReader(socket().getInputStream()));
 			String reponse = "Le document a bien été rendu";
 
-			out.println("Merci d'entrer le numéro du document à rendre au grand chaman:");
+			out.println(Utilitaire.encrypt("Merci d'entrer le numéro du document à rendre au grand chaman:"));
 
 			try {
 				int numero = Integer.parseInt(in.readLine());
@@ -39,7 +38,7 @@ public class RetourService extends MediathequeService {
 					try {
 						mediatheque.retour(numero);
 					} catch (ExNonRetournable e) {
-						System.out.println(d +" ne peut pas être rendu");		
+						reponse = d +" ne peut pas être rendu";		
 					}
 				}
 
@@ -50,7 +49,7 @@ public class RetourService extends MediathequeService {
 			catch (NumberFormatException e) {
 				reponse = "Entrée invalide";
 
-			out.println(reponse);
+			out.println(Utilitaire.encrypt(reponse));
 			}
 			
 		} catch (IOException e) {
@@ -60,9 +59,9 @@ public class RetourService extends MediathequeService {
 
 		finally {
 			try {
+				socket().close();
 				out.close();
 				in.close();
-				socket().close();
 			} catch (IOException e) {
 				System.out.println("Erreur lors de la fermeture des ressources");
 			}

@@ -1,6 +1,5 @@
-package tasks;
+package services;
 
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.TimerTask;
 
@@ -10,16 +9,17 @@ import mediatheque.ExDocumentReseve;
 import mediatheque.Mediatheque;
 import mediatheque.RestrictionException;
 
+
 public class TryReservation extends TimerTask {
 	private int numeroAbonne;
 	private int numeroDocument;
-	Mediatheque mediatheque;
-	private PrintWriter out;
-	public TryReservation(int abonne, int document, Mediatheque m, PrintWriter p) {
+	private Mediatheque mediatheque;
+	private String reponse="";
+	
+	public TryReservation(int abonne, int document, Mediatheque m) {
 		numeroAbonne = abonne;
 		numeroDocument = document;
 		mediatheque=m;
-		out = p;
 	}
 	
 	@Override
@@ -33,15 +33,19 @@ public class TryReservation extends TimerTask {
 			reponse = "Une intervention divine a permis à quelqu'un d'être plus rapide que vous.";
 		} catch (ExDocumentEmprunte e) {
 			reponse = "Votre offrande n'a pas suffit au grand chaman.";
-			e.printStackTrace();
 		} catch (RestrictionException e) {
 			reponse = "vous n’avez pas l’âge pour reserver " + mediatheque.getDocument(numeroDocument);
 		} catch (ExAbonneBannis e) {
 			reponse = "Vous êtes bannis " + e.duree() + " jours";
 		}
 		
-		out.println(reponse);
+		this.reponse = reponse;
+		
 
+	}
+	
+	public String getReponse() {
+		return reponse;
 	}
 
 }

@@ -1,8 +1,6 @@
-package tasks;
+package mediatheque;
 
 import java.util.TimerTask;
-
-import mediatheque.Document;
 
 public class VerifyReservation extends TimerTask {
 	private Document document;
@@ -16,8 +14,5 @@ public class VerifyReservation extends TimerTask {
 			if (document.emprunteur() == null)
 				document.retour();			
 		}
-
-
 	}
-
 }

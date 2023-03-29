@@ -42,12 +42,14 @@ public class AbstractDocument implements Document {
 
 	@Override
 	public void reservationPour(Abonne ab) throws RestrictionException {
+		assert(reserveur==null && emprunteur==null);
 		this.reserveur = ab;
 		
 	}
 
 	@Override
 	public void empruntPar(Abonne ab) throws RestrictionException{
+		assert(emprunteur==null && (reserveur==null || reserveur==ab));
 		this.emprunteur = ab;
 		
 	}
