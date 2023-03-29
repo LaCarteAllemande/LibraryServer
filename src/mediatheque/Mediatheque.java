@@ -14,10 +14,10 @@ public class Mediatheque {
 	private Map<Integer, Abonne> abonnes;
 	private Map<Document, Date> reservations;
 	private Map<Document, Date> emprunts;
-	private static final int RETARD_MAX = 14;
-	private static final int DUREE_EMPRUNT = 21;
-	private static final int DUREE_BANNISSEMMENT = 30;
-	private static final int DELAI_RESERVATION = 7200000;
+	private static final int RETARD_MAX = 14; //retard maximum d'un retour en jour
+	private static final int DUREE_EMPRUNT = 21; //durée d'un emprunt en jours
+	private static final int DUREE_BANNISSEMMENT = 30; //bannisment en jour pour un membre de la tribu
+	private static final int DELAI_RESERVATION = 7200000; // temps en ms avant qu'une reservation n'expire
 
 	public Mediatheque(Map<Integer, Document> d, Map<Integer, Abonne> a, Map<Document, Date> r, Map<Document, Date> e) {
 		this.documents = d;
@@ -43,6 +43,8 @@ public class Mediatheque {
 			synchronized (document) {
 				if (document.emprunteur() != null || document.reserveur() != null) {
 					long difference = (dateEmprunt.getTime() - new Date().getTime());
+					
+					//on vérifie que l'abonné ne rend pas le document trop en retard
 					if (TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS) > (DUREE_EMPRUNT + RETARD_MAX))
 						document.emprunteur().bannir(DUREE_BANNISSEMMENT);
 					document.retour();
@@ -99,6 +101,7 @@ public class Mediatheque {
 
 				else if (document.emprunteur() == null
 						&& (document.reserveur() == null || document.reserveur() == abonne)) {
+					// on vérifie que l'abonné n'est pas bannis
 					if (nbJoursBannis > 0)
 						throw new ExAbonneBannis(nbJoursBannis);
 					else {

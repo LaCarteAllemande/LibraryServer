@@ -57,7 +57,7 @@ public class EmpruntService extends MediathequeService {
 
 				catch (ExDocumentReseve e2) {
 					reponse = mediatheque.getDocument(numeroDocument) + "est réservé jusqu’à"
-							+ new SimpleDateFormat("hh'h'mm").format(e2.reservation());
+							+ new SimpleDateFormat("hh'h'mm").format(e2.getDateReservation());
 				}
 				catch (ExAbonneBannis e) {
 					reponse = "Vous êtes bannis " + e.duree() + " jours";

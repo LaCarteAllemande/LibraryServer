@@ -19,9 +19,8 @@ import mediatheque.RestrictionException;
 import utilitaire.Utilitaire;
 
 public class ReservationService extends MediathequeService {
-	private final static int TEMPS_MAX_ATTENTE = 30;
+	private final static int TEMPS_MAX_ATTENTE = 30; //temps en secondes en dessous du quel on fait patienter l'abonné pour reserver un document déjà reservé
 	private Mediatheque mediatheque;
-	private String timerTaskResponse;
 	private TryReservation task;
 
 	public ReservationService(Socket socket) {
@@ -61,17 +60,17 @@ public class ReservationService extends MediathequeService {
 					}
 
 					catch (ExDocumentReseve e2) {
-						Date date = e2.reservation();
+						Date date = e2.getDateReservation();
 						long difference = (date.getTime() - new Date().getTime()) / 1000;
 
 						if (difference > TEMPS_MAX_ATTENTE)
-							reponse = "Désolé, " + mediatheque.getDocument(numeroDocument) + "est réservé jusqu’à" + new SimpleDateFormat("hh'h'mm").format(e2.reservation());
+							reponse = "Désolé, " + mediatheque.getDocument(numeroDocument) + "est réservé jusqu’à" + new SimpleDateFormat("hh'h'mm").format(e2.getDateReservation());
 						else {
 							
 							Timer t = new Timer();
 							task = new TryReservation(numeroAbonne, numeroDocument, mediatheque);
 							t.schedule(task, date);	
-							reponse = "Une musique célèste se propage dans votre salon...veuillez attendre " + difference + " secondes";
+							reponse = "Une musique célèste se propage dans votre salon...veuillez attendre " + difference + " secondes. Répondez au garnd chaman si vous êtes prêts à attendre";
 						}
 					}
 
@@ -96,18 +95,18 @@ public class ReservationService extends MediathequeService {
 					reponse = "Veuillez-entrer des numéros valides";
 				}
 				
+				out.println(Utilitaire.encrypt(reponse));
+				
 				//si la Timertask a été crée
 				if (task != null) {
-					StringBuilder s = new StringBuilder();
-					s.append(reponse).append(System.lineSeparator());
+					in.readLine();
 					String taskReponse="";
 					while (taskReponse.isEmpty()) {
 						taskReponse = task.getReponse();
 					}
-					s.append(taskReponse);
-					reponse = s.toString();
+					out.println(Utilitaire.encrypt(taskReponse));
 				}
-				out.println(Utilitaire.encrypt(reponse));
+				
 
 			} catch (IOException e) {
 
@@ -132,10 +131,6 @@ public class ReservationService extends MediathequeService {
 				System.out.println("Erreur lors de la fermeture des ressources");
 			}
 		}
-	}
-	
-	public void setReponse(String reponse) {
-		this.timerTaskResponse = reponse;
 	}
 
 }

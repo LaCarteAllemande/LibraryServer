@@ -45,6 +45,7 @@ public class AppMediatheque {
 		this.runnables = new ArrayList<Runnable>();
 
 		for (Class<? extends ServerService> s : serviceClasses) {
+			//chaque port correspond à un service
 			this.runnables.add(new ServerRunnable(PORTS[serviceClasses.indexOf(s)], s));
 		}
 	}

@@ -12,6 +12,7 @@ public class MajBannissement extends TimerTask {
 
 	@Override
 	public void run() {
+		//met à jour les bannissements tous les jours
 		for (Abonne a : abonnes.values()) {
 			a.bannir(-1);
 		}

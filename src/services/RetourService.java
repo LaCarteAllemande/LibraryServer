@@ -32,7 +32,7 @@ public class RetourService extends MediathequeService {
 			out.println(Utilitaire.encrypt("Merci d'entrer le numéro du document à rendre au grand chaman:"));
 
 			try {
-				int numero = Integer.parseInt(in.readLine());
+				int numero = Integer.parseInt(Utilitaire.decrypt(in.readLine()));
 				Document d = mediatheque.getDocument(numero);
 				if (d != null) {
 					try {
