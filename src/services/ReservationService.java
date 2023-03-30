@@ -70,7 +70,7 @@ public class ReservationService extends MediathequeService {
 							Timer t = new Timer();
 							task = new TryReservation(numeroAbonne, numeroDocument, mediatheque);
 							t.schedule(task, date);	
-							reponse = "Une musique célèste se propage dans votre salon...veuillez attendre " + difference + " secondes. Répondez au garnd chaman si vous êtes prêts à attendre";
+							reponse = "Une musique célèste se propage dans votre salon...veuillez attendre " + difference + " secondes. Répondez au grand chaman si vous êtes prêts à attendre";
 						}
 					}
 

@@ -56,12 +56,16 @@ public class MediathequeBDD {
 			
 			switch(type) {
 			case TYPE_DVD:
-				boolean adulte = rs.getBoolean("adulte");
+				ResultSet set = connection.prepareStatement("SELECT * FROM DVD WHERE NumeroDocument = " + numero).executeQuery();
+				set.next();
+				boolean adulte = set.getBoolean("adulte");
 				d = new DVD(numero, titre, reserveur, emprunteur, adulte);
 				documents.put(Integer.valueOf(d.numero()), d);
 			
 			case TYPE_LIVRE:
-				String maisonEdition = rs.getString("MaisonEdition");
+				ResultSet set2 = connection.prepareStatement("SELECT * FROM LIVRE WHERE NumeroDocument = " + numero).executeQuery();
+				set2.next();
+				String maisonEdition = set2.getString("MaisonEdition");
 				d = new Livre(numero, titre, reserveur, emprunteur, maisonEdition);
 				documents.put(Integer.valueOf(d.numero()), d);
 				
